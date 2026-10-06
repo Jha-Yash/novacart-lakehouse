@@ -1,0 +1,24 @@
+{
+  "Name": "novacart-bronze-ingestion",
+  "Description": "NovaCart Bronze Ingestion Pipeline (Landing to Bronze with Lineage)",
+  "Role": "arn:aws:iam::125992594465:role/NovaCartGlueRole",
+  "ExecutionProperty": {
+    "MaxConcurrentRuns": 2
+  },
+  "Command": {
+    "Name": "glueetl",
+    "ScriptLocation": "s3://novacart-order-analytics-125992594465-ap-southeast-2/scripts/bronze_ingestion.py",
+    "PythonVersion": "3"
+  },
+  "DefaultArguments": {
+    "--job-language": "python",
+    "--enable-glue-datacatalog": "true",
+    "--enable-continuous-cloudwatch-log": "true",
+    "--enable-metrics": "true"
+  },
+  "MaxRetries": 0,
+  "GlueVersion": "4.0",
+  "WorkerType": "G.1X",
+  "NumberOfWorkers": 2,
+  "Timeout": 15
+}

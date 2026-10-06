@@ -33,14 +33,22 @@ The NovaCart hackathon implementation proceeds in 9 sequential, verified phases.
 
 ---
 
-### **PHASE 3: Bronze Ingestion Framework**
-- [ ] Ingest Batch 1 source files into `bronze/` tier.
-- [ ] Attach mandatory lineage metadata:
+### **PHASE 3: Bronze Ingestion Framework (COMPLETED)**
+- [x] Ingest Batch 1 source files into `bronze/` tier.
+- [x] Attach mandatory lineage metadata:
   - `batch_id`
   - `source_file`
   - `ingestion_timestamp`
-- [ ] Archive raw structures without destructive transformation.
-- **Gate:** Ingestion row counts match raw source records (orders: 1418, items: 1006, etc.).
+- [x] Archive raw structures without destructive transformation.
+- [x] Validate row counts match raw source records:
+  - `bronze_orders`: 1,418 rows
+  - `bronze_order_items`: 1,006 rows
+  - `bronze_customers`: 194 rows
+  - `bronze_fx_rates`: 84 rows
+  - `bronze_products`: 40 rows
+- [x] Register Bronze tables in AWS Glue Data Catalog (`novacart.bronze_*`).
+- [x] Write operational audit metrics to `s3://.../control/batch_audit/`.
+- **Gate:** Ingestion row counts match raw source records (100% PASS).
 
 ---
 
