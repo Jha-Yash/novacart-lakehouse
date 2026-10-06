@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaCart Lakehouse Executive Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-blue-500/30">
+            NC
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+              NovaCart Lakehouse Analytics
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold tracking-wide uppercase">
+                Production Live
+              </span>
+            </h1>
+            <p class="text-sm text-slate-400">AWS Lakehouse with Apache Iceberg v2 • S3 Sydney (ap-southeast-2) • Amazon Athena</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+          Athena Synced
+        </span>
+        <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 font-mono">
+          Glue 4.0 PySpark
+        </span>
+        <button onclick="window.print()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition shadow-md shadow-blue-600/20">
+          Export Report
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-800 gap-2 pb-1">
+      <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active px-4 py-2 font-medium text-sm rounded-lg transition bg-blue-600/20 text-blue-400 border border-blue-500/30">
+        Executive Overview
+      </button>
+      <button onclick="switchTab('category')" id="tab-category" class="tab-btn px-4 py-2 font-medium text-sm rounded-lg transition text-slate-400 hover:text-slate-200">
+        Category & Product Returns
+      </button>
+      <button onclick="switchTab('scd2')" id="tab-scd2" class="tab-btn px-4 py-2 font-medium text-sm rounded-lg transition text-slate-400 hover:text-slate-200">
+        Customer SCD Type 2
+      </button>
+      <button onclick="switchTab('quality')" id="tab-quality" class="tab-btn px-4 py-2 font-medium text-sm rounded-lg transition text-slate-400 hover:text-slate-200">
+        Data Quality & Quarantine
+      </button>
+    </div>
+
+    <!-- TAB 1: EXECUTIVE OVERVIEW -->
+    <div id="view-overview" class="tab-content space-y-6">
+      
+      <!-- Key KPI Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- Net Revenue -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Net Revenue (USD)</div>
+          <div class="text-2xl font-bold text-emerald-400 tracking-tight">$3,747,649.79</div>
+          <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+            <span>Gross: $4.07M</span>
+            <span class="text-rose-400">-$321.7K Returns</span>
+          </div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Deduplicated Orders</div>
+          <div class="text-2xl font-bold text-blue-400 tracking-tight">945</div>
+          <div class="mt-2 text-xs text-slate-400">
+            Batch 1 (495) + Batch 2 (450)
+          </div>
+        </div>
+
+        <!-- Active Customers -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Active Customers (SCD2)</div>
+          <div class="text-2xl font-bold text-purple-400 tracking-tight">130</div>
+          <div class="mt-2 text-xs text-slate-400">
+            60 Historical Audits Retained
+          </div>
+        </div>
+
+        <!-- Quarantined Payments -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Quarantined Records</div>
+          <div class="text-2xl font-bold text-amber-400 tracking-tight">5</div>
+          <div class="mt-2 text-xs text-amber-500/80">
+            Orphan Payments Isolated
+          </div>
+        </div>
+
+        <!-- Test Suite Status -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">E2E Test Suite</div>
+          <div class="text-2xl font-bold text-emerald-400 tracking-tight">9 / 9 Passed</div>
+          <div class="mt-2 text-xs text-emerald-500">
+            100% Automated Assertions
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Charts & Breakdown Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Category Revenue Breakdown -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 lg:col-span-2">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h2 class="font-bold text-lg text-white">Net Revenue by Product Category</h2>
+              <p class="text-xs text-slate-400">Standardized to USD with returns deducted</p>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 font-mono">
+              gold_revenue_by_category
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            
+            <!-- Electronics -->
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="font-semibold text-slate-200">Electronics</span>
+                <span class="font-mono text-emerald-400">$2,941,711.89 (78.5%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                <div class="bg-blue-500 h-3 rounded-full" style="width: 78.5%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>1,140 Units Sold • 42 Returned</span>
+                <span>Return Rate: 3.47%</span>
+              </div>
+            </div>
+
+            <!-- Sports -->
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="font-semibold text-slate-200">Sports</span>
+                <span class="font-mono text-emerald-400">$259,391.61 (6.9%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                <div class="bg-emerald-500 h-3 rounded-full" style="width: 25%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>254 Units Sold • 10 Returned</span>
+                <span>Return Rate: 3.81%</span>
+              </div>
+            </div>
+
+            <!-- Fashion -->
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="font-semibold text-slate-200">Fashion</span>
+                <span class="font-mono text-emerald-400">$227,628.77 (6.1%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                <div class="bg-purple-500 h-3 rounded-full" style="width: 22%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>391 Units Sold • 20 Returned</span>
+                <span class="text-amber-400 font-semibold">Return Rate: 4.85% (Highest)</span>
+              </div>
+            </div>
+
+            <!-- Home -->
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="font-semibold text-slate-200">Home</span>
+                <span class="font-mono text-emerald-400">$142,658.33 (3.8%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                <div class="bg-amber-500 h-3 rounded-full" style="width: 15%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>414 Units Sold • 14 Returned</span>
+                <span>Return Rate: 3.55%</span>
+              </div>
+            </div>
+
+            <!-- Beauty & Books & Uncategorized -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+              <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60">
+                <div class="text-xs text-slate-400">Beauty</div>
+                <div class="text-sm font-bold text-white mt-1">$96,273.96</div>
+                <div class="text-xs text-slate-400 mt-1">339 Sold • 2.93% Ret</div>
+              </div>
+              <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60">
+                <div class="text-xs text-slate-400">Books</div>
+                <div class="text-sm font-bold text-white mt-1">$60,187.15</div>
+                <div class="text-xs text-slate-400 mt-1">296 Sold • 2.27% Ret</div>
+              </div>
+              <div class="bg-slate-800/60 p-3 rounded-lg border border-emerald-500/40 bg-emerald-500/5">
+                <div class="text-xs text-emerald-400 font-semibold">Uncategorized (Batch 2)</div>
+                <div class="text-sm font-bold text-emerald-300 mt-1">$19,798.07</div>
+                <div class="text-xs text-emerald-400/80 mt-1">21 Sold • 0% Ret (Handled)</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Top Customer Lifetime Value (CLV) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-lg text-white">Top Champions (CLV)</h2>
+            <span class="text-xs text-slate-400 font-mono">gold_clv</span>
+          </div>
+          
+          <div class="space-y-3">
+            <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700 flex justify-between items-center">
+              <div>
+                <div class="font-semibold text-sm text-white">Jonas Schmidt <span class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 ml-1">Bronze</span></div>
+                <div class="text-xs text-slate-400">ID: C0003 • 45 Orders • 126 Units</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono text-emerald-400 font-bold text-sm">$584,648.99</div>
+                <div class="text-xs text-slate-400">Net Spend</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700 flex justify-between items-center">
+              <div>
+                <div class="font-semibold text-sm text-white">Liam Weber <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 ml-1">Gold</span></div>
+                <div class="text-xs text-slate-400">ID: C0066 • 46 Orders • 130 Units</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono text-emerald-400 font-bold text-sm">$525,214.75</div>
+                <div class="text-xs text-slate-400">Net Spend</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700 flex justify-between items-center">
+              <div>
+                <div class="font-semibold text-sm text-white">Meera Kapoor <span class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 ml-1">Bronze</span></div>
+                <div class="text-xs text-slate-400">ID: C0079 • 39 Orders • 107 Units</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono text-emerald-400 font-bold text-sm">$424,879.36</div>
+                <div class="text-xs text-slate-400">Net Spend</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700 flex justify-between items-center">
+              <div>
+                <div class="font-semibold text-sm text-white">Li Mehta <span class="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 ml-1">Platinum</span></div>
+                <div class="text-xs text-slate-400">ID: C0027 • 49 Orders • 143 Units</div>
+              </div>
+              <div class="text-right">
+                <div class="font-mono text-emerald-400 font-bold text-sm">$362,735.94</div>
+                <div class="text-xs text-slate-400">Net Spend</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: CATEGORY & PRODUCT RETURNS -->
+    <div id="view-category" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h2 class="text-lg font-bold text-white mb-2">Product Return Rates & Root Causes</h2>
+        <p class="text-sm text-slate-400 mb-6">Detailed breakdown of return reasons derived from raw operational data.</p>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="text-xs uppercase bg-slate-800/80 text-slate-400 border-b border-slate-700">
+              <tr>
+                <th class="p-3">Product Name</th>
+                <th class="p-3">Category</th>
+                <th class="p-3 text-right">Units Sold</th>
+                <th class="p-3 text-right">Units Returned</th>
+                <th class="p-3 text-right">Return Rate</th>
+                <th class="p-3 text-center">Primary Reason</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-medium text-white">Wool Winter Coat</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-xs">Fashion</span></td>
+                <td class="p-3 text-right font-mono">112</td>
+                <td class="p-3 text-right font-mono text-rose-400">8</td>
+                <td class="p-3 text-right font-mono font-bold text-rose-400">7.14%</td>
+                <td class="p-3 text-center text-xs text-slate-300">Wrong Size (5)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-medium text-white">Trail Running Shoes</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs">Sports</span></td>
+                <td class="p-3 text-right font-mono">88</td>
+                <td class="p-3 text-right font-mono text-rose-400">5</td>
+                <td class="p-3 text-right font-mono font-bold text-rose-400">5.68%</td>
+                <td class="p-3 text-center text-xs text-slate-300">Wrong Size (4)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-medium text-white">4K Ultra HD OLED TV</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-xs">Electronics</span></td>
+                <td class="p-3 text-right font-mono">245</td>
+                <td class="p-3 text-right font-mono text-rose-400">9</td>
+                <td class="p-3 text-right font-mono font-bold text-rose-400">3.67%</td>
+                <td class="p-3 text-center text-xs text-slate-300">Damaged (6)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-medium text-white">Ceramic Non-Stick Pan</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs">Home</span></td>
+                <td class="p-3 text-right font-mono">134</td>
+                <td class="p-3 text-right font-mono text-rose-400">4</td>
+                <td class="p-3 text-right font-mono font-bold text-rose-400">2.99%</td>
+                <td class="p-3 text-center text-xs text-slate-300">Not As Described (3)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="p-3 font-medium text-emerald-300">Smart Home Hub (Uncataloged)</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-xs">Uncategorized</span></td>
+                <td class="p-3 text-right font-mono">21</td>
+                <td class="p-3 text-right font-mono text-emerald-400">0</td>
+                <td class="p-3 text-right font-mono font-bold text-emerald-400">0.00%</td>
+                <td class="p-3 text-center text-xs text-emerald-400">No Returns</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CUSTOMER SCD TYPE 2 -->
+    <div id="view-scd2" class="tab-content hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white">Customer Slowly Changing Dimension (SCD Type 2)</h2>
+            <p class="text-sm text-slate-400">Audit trail showing point-in-time attribute preservation for Customer <span class="font-mono text-blue-400 font-bold">C0004</span></p>
+          </div>
+          <span class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30 font-semibold">
+            Table: dim_customer_scd2
+          </span>
+        </div>
+
+        <div class="relative border-l-2 border-slate-700 ml-4 space-y-8 pl-6 my-6">
+          
+          <!-- Version 1 -->
+          <div class="relative">
+            <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-slate-600 border-2 border-slate-900"></div>
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-mono uppercase bg-slate-700 text-slate-300 px-2 py-0.5 rounded font-semibold">Version 1 (Initial Ingestion)</span>
+                <span class="text-xs text-slate-400 font-mono">Valid: 2026-09-01 → 2026-09-10</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300 mt-2">
+                <div><span class="text-slate-500">Tier:</span> <span class="font-semibold text-amber-300">Bronze</span></div>
+                <div><span class="text-slate-500">Country:</span> UK</div>
+                <div><span class="text-slate-500">City:</span> London</div>
+                <div><span class="text-slate-500">Status:</span> <span class="text-slate-400 font-mono">is_current = false</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Version 2 -->
+          <div class="relative">
+            <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900"></div>
+            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-mono uppercase bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-semibold border border-blue-500/30">Version 2 (Tier Upgrade)</span>
+                <span class="text-xs text-slate-400 font-mono">Valid: 2026-09-10 → 2026-09-20</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300 mt-2">
+                <div><span class="text-slate-500">Tier:</span> <span class="font-semibold text-slate-200">Silver</span> (Upgraded)</div>
+                <div><span class="text-slate-500">Country:</span> UK</div>
+                <div><span class="text-slate-500">City:</span> London</div>
+                <div><span class="text-slate-500">Status:</span> <span class="text-slate-400 font-mono">is_current = false</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Version 3 (Active) -->
+          <div class="relative">
+            <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-slate-900 ring-4 ring-emerald-500/20"></div>
+            <div class="bg-emerald-950/20 p-4 rounded-xl border border-emerald-500/40">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-mono uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-semibold border border-emerald-500/30">Version 3 (Current Active State)</span>
+                <span class="text-xs text-emerald-400 font-mono font-semibold">Valid: 2026-09-20 → 9999-12-31</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300 mt-2">
+                <div><span class="text-slate-500">Tier:</span> <span class="font-semibold text-yellow-300">Gold</span> (Top Tier)</div>
+                <div><span class="text-slate-500">Country:</span> AU (Relocated)</div>
+                <div><span class="text-slate-500">City:</span> Sydney</div>
+                <div><span class="text-slate-500">Status:</span> <span class="text-emerald-400 font-mono font-bold">is_current = true</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: DATA QUALITY & QUARANTINE -->
+    <div id="view-quality" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Quarantine Box -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-lg text-white">Quarantined Orphan Payments</h2>
+            <span class="text-xs bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded font-mono border border-rose-500/30">
+              payments_quarantine
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">These 5 payments referenced invalid order IDs in Batch 2 and were safely quarantined with audit reasons.</p>
+          
+          <div class="space-y-2 font-mono text-xs">
+            <div class="p-2.5 bg-slate-800 rounded border border-slate-700 flex justify-between items-center">
+              <span class="text-rose-400 font-bold">NC-800001</span>
+              <span class="text-slate-300">EUR 142.50</span>
+              <span class="text-slate-400">UNMATCHED_ORDER_ID</span>
+            </div>
+            <div class="p-2.5 bg-slate-800 rounded border border-slate-700 flex justify-between items-center">
+              <span class="text-rose-400 font-bold">NC-800002</span>
+              <span class="text-slate-300">USD 99.00</span>
+              <span class="text-slate-400">UNMATCHED_ORDER_ID</span>
+            </div>
+            <div class="p-2.5 bg-slate-800 rounded border border-slate-700 flex justify-between items-center">
+              <span class="text-rose-400 font-bold">NC-800003</span>
+              <span class="text-slate-300">GBP 310.20</span>
+              <span class="text-slate-400">UNMATCHED_ORDER_ID</span>
+            </div>
+            <div class="p-2.5 bg-slate-800 rounded border border-slate-700 flex justify-between items-center">
+              <span class="text-rose-400 font-bold">NC-800004</span>
+              <span class="text-slate-300">EUR 84.00</span>
+              <span class="text-slate-400">UNMATCHED_ORDER_ID</span>
+            </div>
+            <div class="p-2.5 bg-slate-800 rounded border border-slate-700 flex justify-between items-center">
+              <span class="text-rose-400 font-bold">NC-800005</span>
+              <span class="text-slate-300">USD 520.00</span>
+              <span class="text-slate-400">UNMATCHED_ORDER_ID</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automated Quality Assurance Checklist -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h2 class="font-bold text-lg text-white mb-2">Automated Quality Certifications</h2>
+          <p class="text-xs text-slate-400 mb-4">Real-time status of pipeline tests and validation checks</p>
+
+          <div class="space-y-3 text-xs">
+            <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-slate-200">S3 Server-Side Encryption (SSE)</div>
+                <div class="text-slate-400">AES256 active on Sydney bucket</div>
+              </div>
+              <span class="text-emerald-400 font-bold">VERIFIED</span>
+            </div>
+            <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-slate-200">S3 Block Public Access</div>
+                <div class="text-slate-400">All 4 public exposure flags active</div>
+              </div>
+              <span class="text-emerald-400 font-bold">VERIFIED</span>
+            </div>
+            <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-slate-200">Idempotency & Re-run Deduplication</div>
+                <div class="text-slate-400">Iceberg MERGE INTO on composite keys</div>
+              </div>
+              <span class="text-emerald-400 font-bold">VERIFIED</span>
+            </div>
+            <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700 flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-slate-200">Multi-Format Timestamps</div>
+                <div class="text-slate-400">4 raw formats converted to UTC</div>
+              </div>
+              <span class="text-emerald-400 font-bold">VERIFIED</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-4 border-t border-slate-800">
+      NovaCart Lakehouse Analytics • AWS S3, AWS Glue 4.0, Apache Iceberg v2, Amazon Athena • Region: ap-southeast-2
+    </footer>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-blue-600/20', 'text-blue-400', 'border', 'border-blue-500/30');
+        btn.classList.add('text-slate-400');
+      });
+
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      activeBtn.classList.add('active', 'bg-blue-600/20', 'text-blue-400', 'border', 'border-blue-500/30');
+      activeBtn.classList.remove('text-slate-400');
+    }
+  </script>
+</body>
+</html>
