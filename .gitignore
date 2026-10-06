@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# AWS & Credentials
+.aws/
+credentials
+*.pem
+*.key
+*.id_rsa
+secrets.*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Data & local temporary outputs
+data/raw/
+data/processed/
+scratch/
