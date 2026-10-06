@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'NovaCart Order Analytics - Foundation Infrastructure (S3, Glue Database, IAM Role)'
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: 'novacart-order-analytics-125992594465-ap-southeast-2'
+    Description: 'Globally unique S3 bucket name for NovaCart Lakehouse'
+
+  DatabaseName:
+    Type: String
+    Default: 'novacart'
+    Description: 'Glue Data Catalog Database Name'
+
+  GlueRoleName:
+    Type: String
+    Default: 'NovaCartGlueRole'
+    Description: 'IAM Role name for AWS Glue jobs'
+
+Resources:
+  NovaCartBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  NovaCartGlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Ref DatabaseName
+        Description: 'NovaCart Order Analytics Glue Catalog Database for Iceberg tables'
+
+  NovaCartGlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref GlueRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: NovaCartS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource:
+                  - !Sub 'arn:aws:s3:::${BucketName}'
+                  - !Sub 'arn:aws:s3:::${BucketName}/*'
+        - PolicyName: NovaCartGlueCatalogAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:CreateTable
+                  - glue:UpdateTable
+                  - glue:DeleteTable
+                  - glue:GetPartition
+                  - glue:GetPartitions
+                  - glue:CreatePartition
+                  - glue:BatchCreatePartition
+                  - glue:BatchUpdatePartition
+                  - glue:BatchGetPartition
+                Resource:
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}'
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${DatabaseName}/*'
+
+Outputs:
+  BucketName:
+    Value: !Ref NovaCartBucket
+    Description: 'NovaCart S3 Bucket'
+  GlueDatabaseName:
+    Value: !Ref NovaCartGlueDatabase
+    Description: 'NovaCart Glue Database'
+  GlueRoleArn:
+    Value: !GetAtt NovaCartGlueRole.Arn
+    Description: 'NovaCart Glue IAM Role ARN'

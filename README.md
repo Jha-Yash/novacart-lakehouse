@@ -36,7 +36,11 @@ hackathon/
 │   └── raw/                  # Source datasets (customers, orders, items, fx, etc.)
 ├── scripts/
 │   └── profile_dataset.py    # Empirical dataset profiling utility
+├── infrastructure/           # CloudFormation templates and job definitions
+│   ├── foundation.yaml       # S3 bucket, Glue DB, IAM Role
+│   └── glue_smoke_test_job.json # Glue smoke test job definition
 ├── src/
+│   ├── smoke_test/           # Environment validation Iceberg smoke test job
 │   ├── ingestion/            # Landing to Bronze ingestion scripts
 │   ├── bronze/               # Bronze storage definitions
 │   ├── silver/               # Silver cleansing, deduplication, and SCD2
@@ -45,51 +49,34 @@ hackathon/
 │   └── utils/                # Logging, audit, and helper modules
 ├── sql/                      # Athena analytical queries & DDL
 ├── tests/                    # Unit and integration test suites
-├── config/                   # Non-secret environment configurations
+├── config/                   # Central non-secret environment configurations
 └── docs/                     # Detailed architectural and operational guides
+    └── environment_setup.md  # Complete environment and validation report
 ```
 
 ---
 
-## 3. Dataset Summary
+## 3. Provisioned AWS Resources
 
-The NovaCart source dataset contains 8 verified files in `data/raw/`:
-
-| File | Rows / Records | Format | Primary Role |
+| Resource | Resource Name / Identifier | Region | Status |
 |---|---|---|---|
-| `customers_changes.csv` | 194 rows | CSV | Customer change stream for SCD Type 2 dimension |
-| `fx_rates.csv` | 84 rows | CSV | Daily exchange rates to USD for EUR, GBP, INR, SGD |
-| `products.csv` | 40 rows | CSV | Product catalog metadata across 6 categories |
-| `orders_batch_1.csv` | 1,418 rows | CSV | Initial order lifecycle event batch (495 unique orders) |
-| `orders_batch_2.csv` | 1,545 rows | CSV | Incremental order batch (450 new, 132 modified orders) |
-| `order_items_batch_1_json.txt` | 1,006 lines | JSONL | Order line items (Batch 1) with discounts & attributes |
-| `order_items_batch_2_jsonl.txt` | 1,007 lines | JSONL | Order line items (Batch 2) with returns and updates |
-| `payments_json.txt` | 1,164 records | JSON | Transaction records with status, method, and gateway refs |
+| **S3 Bucket** | `novacart-order-analytics-125992594465-ap-southeast-2` | `ap-southeast-2` | Active (AES-256, Public Blocked) |
+| **Glue Database** | `novacart` | `ap-southeast-2` | Active |
+| **Glue IAM Role** | `NovaCartGlueRole` | Global / IAM | Active (Least privilege) |
+| **Glue Smoke Job** | `novacart-iceberg-smoke-test` | `ap-southeast-2` | Active (Glue 4.0 + Iceberg) |
+| **Iceberg Test Table**| `novacart.environment_smoke_test` | `ap-southeast-2` | Active (3 rows verified) |
+| **Athena Query Output**| `s3://.../athena-query-results/` | `ap-southeast-2` | Verified (`SELECT COUNT(*) = 3`) |
 
 ---
 
-## 4. Phase 1 Status: COMPLETED
+## 4. Phase Status Summary
 
-Phase 1 (Discovery, Data Profiling, and Architecture) is complete:
-- [x] Local environment verified (Python 3.10.11, AWS CLI 1.46.1).
-- [x] Source files inspected and copied to `data/raw/`.
-- [x] All 13 data quality anomalies empirically validated with exact metrics.
-- [x] Quality handling decision matrix established in [`DATA_PROFILE.md`](file:///c:/Users/yashj/Desktop/hackathon/DATA_PROFILE.md).
-- [x] Lakehouse architecture specified in [`ARCHITECTURE.md`](file:///c:/Users/yashj/Desktop/hackathon/ARCHITECTURE.md).
-- [x] Implementation roadmap detailed in [`PHASE_PLAN.md`](file:///c:/Users/yashj/Desktop/hackathon/PHASE_PLAN.md).
-- [x] Security controls configured via [`.gitignore`](file:///c:/Users/yashj/Desktop/hackathon/.gitignore).
-
----
-
-## 5. Prerequisites for Phase 2 Provisioning
-
-To proceed with **Phase 2** (provisioning the NovaCart S3 bucket, Glue database, Glue IAM role, and executing the Iceberg smoke test), configure AWS credentials on your local machine:
-
-```powershell
-aws configure
-```
-Provide:
-- **AWS Access Key ID:** `<your-access-key-id>`
-- **AWS Secret Access Key:** `<your-secret-access-key>`
-- **Default region name:** e.g., `us-east-1`
-- **Default output format:** `json`
+- [x] **Phase 1: Discovery, Dataset Profiling & Architecture** — Completed & Verified.
+- [x] **Phase 2: AWS Foundation Provisioning & Iceberg Smoke Test** — Completed & Verified (All Gates PASS).
+- [ ] **Phase 3: Bronze Ingestion Framework** — Next.
+- [ ] **Phase 4: Silver Layer Cleansing & Quality Control**
+- [ ] **Phase 5: Incremental Processing & Idempotent MERGE (Batch 1 & 2)**
+- [ ] **Phase 6: Customer Dimension SCD Type 2 Implementation**
+- [ ] **Phase 7: Gold Analytical Aggregations & Business KPIs**
+- [ ] **Phase 8: Operational Auditing, Monitoring & Control**
+- [ ] **Phase 9: End-to-End Integration Verification & Final Demo**
